@@ -76,6 +76,85 @@ a:hover {
   font-size: 1.05rem;
 }
 
+.hero {
+  padding: var(--space-16) 0 var(--space-12);
+}
+
+.hero__name {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.hero__role {
+  color: var(--color-accent);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: var(--space-2) 0 var(--space-6);
+}
+
+.hero__positioning {
+  color: var(--color-text-muted);
+  max-width: 40rem;
+  font-size: 1.05rem;
+  margin: 0 0 var(--space-8);
+}
+
+.button {
+  display: inline-block;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-6);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.button:hover {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  text-decoration: none;
+}
+
+.skills {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-12) 0;
+}
+
+.skills__groups {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8) var(--space-12);
+  margin-top: var(--space-6);
+}
+
+.skills__heading {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-4);
+}
+
+.skills__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.skills__list li {
+  font-size: 1.05rem;
+}
+
+@media (max-width: 640px) {
+  .skills__groups {
+    grid-template-columns: 1fr;
+  }
+}
+
 .video-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

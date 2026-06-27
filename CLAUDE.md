@@ -15,7 +15,7 @@ Dark, minimal, clean — no UI framework, no web fonts, no visual clutter. Speci
 Every page is wrapped in `src/layouts/BaseLayout.astro`, which renders `<Nav />` and `<Footer />` (from `src/components/`) around a `<slot />`, plus the `<head>` (title, meta description, canonical link, Open Graph + Twitter card tags using `Astro.site` to produce absolute URLs). **Nav and footer changes only ever need to happen in those two component files** — never duplicate nav/footer markup into a page.
 
 Routes:
-- `/` (`src/pages/index.astro`) — featured showreel (`VideoCard`) + short intro paragraph. Showreel is still a placeholder.
+- `/` (`src/pages/index.astro`) — text-led hero (name, role, muted positioning line, "View work" button linking to `/work`) + a two-group skills section (Technical / Creative & Production, equal-weight columns via `.skills__groups { grid-template-columns: 1fr 1fr }`, stacking on mobile). No video on this page — the showreel placeholder was removed entirely rather than filled in.
 - `/experience` (`src/pages/experience.astro`) — two real past roles (PowerSwing Jakarta, CISSA), each with title/place/dates/optional type badge/bullets.
 - `/work` (`src/pages/work.astro`) — categorized editing portfolio with real content, see below.
 
@@ -37,7 +37,7 @@ All videos in `work.ts` are real (CISSA event work, performance edits, narrative
 
 `src/components/YouTubeEmbed.astro` is pure presentation: a thumbnail (`img.youtube.com/vi/{id}/hqdefault.jpg`) behind a play button, no iframe and no script of its own.
 
-`src/components/VideoCard.astro` wraps it and stamps the surrounding `<figure class="video-card">` with `data-video-id` / `data-title` / `data-caption` — that's the data the lightbox reads. It also renders `title` and `caption` as visible heading/paragraph beneath the thumbnail. This is the component pages should use whenever a video needs visible context — used for every video on `/work` and for the homepage showreel, so there's no separate "hero video" component.
+`src/components/VideoCard.astro` wraps it and stamps the surrounding `<figure class="video-card">` with `data-video-id` / `data-title` / `data-caption` — that's the data the lightbox reads. It also renders `title` and `caption` as visible heading/paragraph beneath the thumbnail. This is the component pages should use whenever a video needs visible context. As of the text-led homepage hero, `/work` is the only page that uses it.
 
 `src/components/VideoLightbox.astro` is rendered exactly once, from `BaseLayout.astro`, so every page gets one overlay regardless of how many videos it has. Its script listens for clicks on `.yt-embed__trigger` via delegation on `document` (catches every `VideoCard` on the page, however many there are), builds the navigable video list from every `.video-card` on the page in DOM order, and opens the clicked video full-size over a blurred backdrop with title/caption, a close button, and Prev/Next arrows (also wired to ←/→ and Escape). The iframe is only created when the lightbox opens and is fully torn down (`replaceChildren()`) on close or when navigating, so playback always stops and nothing loads until a thumbnail is actually clicked.
 
@@ -51,7 +51,6 @@ Because there's only ever one `VideoLightbox` instance per page, none of this de
 
 ## Known placeholders to replace
 
-- The showreel video in `src/pages/index.astro`.
 - `public/og-image.svg` — a simple placeholder graphic. Works for Open Graph previews now, but some older crawlers (notably Facebook/LinkedIn) handle SVG `og:image` less reliably than PNG/JPG — consider swapping in a real screenshot or designed graphic later.
 
-`src/data/work.ts` and `src/pages/experience.astro` are no longer placeholder — they hold real content.
+`src/data/work.ts`, `src/pages/experience.astro`, and `src/pages/index.astro` are no longer placeholder — they hold real content.

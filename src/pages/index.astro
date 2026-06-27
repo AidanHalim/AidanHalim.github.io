@@ -1,22 +1,58 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import VideoCard from '../components/VideoCard.astro';
+
+const skillGroups = [
+  {
+    name: 'Technical',
+    skills: [
+      'Adobe Premiere Pro',
+      'DaVinci Resolve',
+      'Color grading',
+      'Sound design & effects',
+      'Motion graphics & keyframing',
+      'Visual effects',
+      'Subtitling',
+    ],
+  },
+  {
+    name: 'Creative & Production',
+    skills: [
+      'Directing',
+      'Writing & scripting',
+      'Filming & cinematography',
+      'Music selection',
+      'On-camera presenting',
+    ],
+  },
+];
 ---
 
 <BaseLayout
   title="Aidan Halim, Video Editor"
-  description="Aidan Halim is a video editor and computer science student. Watch the showreel and browse cinematics, performance films, narrative work, and more."
+  description="Aidan Halim is a video editor who takes projects from concept to final cut — directing, writing, filming, and editing client and personal work."
 >
-  <VideoCard
-    videoId="dQw4w9WgXcQ"
-    title="TODO: replace with real showreel"
-    caption="A reel of recent work — swap in your latest highlight reel here."
-  />
+  <section class="hero">
+    <h1 class="hero__name">Aidan Halim</h1>
+    <p class="hero__role">Video Editor</p>
+    <p class="hero__positioning">
+      I take projects from concept to final cut, directing, writing, and filming as
+      well as editing. My work spans client projects for a Jakarta aerial-sports
+      studio and a Melbourne tech society, alongside personal creative films.
+    </p>
+    <a class="button" href="/work">View work</a>
+  </section>
 
-  <p class="intro">
-    I'm Aidan Halim, a video editor and computer science student. I edit commentary,
-    montage, and motion-graphics-driven content, and I care about pairing clean cuts
-    with the kind of technical polish that comes from also building software. Take a
-    look at my <a href="/work">work</a> or read more about my <a href="/experience">experience</a>.
-  </p>
+  <section class="skills">
+    <p class="intro">From the edit suite to the director's chair.</p>
+    <div class="skills__groups">
+      {skillGroups.map((group) => (
+        <div class="skills__group">
+          <h2 class="skills__heading">{group.name}</h2>
+          <ul class="skills__list">
+            {group.skills.map((skill) => <li>{skill}</li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
 </BaseLayout>
