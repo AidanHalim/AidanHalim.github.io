@@ -41,6 +41,12 @@ export const tiers: Tier[] = [
             caption:
               "Promotional cinematic for CISSA's Design Blitz event. Filmed, directed, wrote, and edited. Sound design and effects, visual effects, color grading, and subtitling.",
           },
+          {
+            id: 'skf5tVMvmlc',
+            title: 'Codebrew 2025',
+            caption:
+              "Promotional cinematic for CISSA's Codebrew 2025 event. Filmed, directed, wrote, and edited. Fast-paced cuts and music, custom title-card graphics, and keyframed animations.",
+          },
         ],
       },
       {
@@ -58,6 +64,12 @@ export const tiers: Tier[] = [
             title: 'Aerial Performance at the Ritz Carlton',
             caption:
               'Live aerial performance edited from four camera angles. Shots restructured and re-timed to a shortened music cut for a tighter final piece. 1.8K views.',
+          },
+          {
+            id: '0idQhppoLz0',
+            title: 'PowerSwing Aerial Annual Student Showcase 2025',
+            caption:
+              'Annual showcase editing seven separate aerial performances back to back, each cut to its own shortened track with custom title cards created for every performer. Transitions and color grading throughout.',
           },
         ],
       },
@@ -136,6 +148,12 @@ export const tiers: Tier[] = [
             title: 'Top Gun Maverick, Oppenheimer Trailer Style',
             caption:
               'A fanmade trailer recutting Top Gun Maverick in the style of the Oppenheimer main trailer. 2K views.',
+          },
+          {
+            id: '0rlQVqV4aD0',
+            title: "Avengers Endgame, King's Man Trailer 2 Style",
+            caption:
+              "A fanmade trailer recutting Avengers: Endgame to the music and editing structure of the King's Man Trailer 2. 1.1K views.",
           },
         ],
       },
