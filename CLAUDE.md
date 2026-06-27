@@ -16,7 +16,7 @@ Every page is wrapped in `src/layouts/BaseLayout.astro`, which renders `<Nav />`
 
 Routes:
 - `/` (`src/pages/index.astro`) — featured showreel (`VideoCard`) + short intro paragraph. Showreel is still a placeholder.
-- `/experience` (`src/pages/experience.astro`) — two past roles, each with title/place/dates/bullets. Currently placeholder content with literal `TODO:` markers — replace before shipping.
+- `/experience` (`src/pages/experience.astro`) — two real past roles (PowerSwing Jakarta, CISSA), each with title/place/dates/optional type badge/bullets.
 - `/work` (`src/pages/work.astro`) — categorized editing portfolio with real content, see below.
 
 Site title is set per-page as `"Aidan Halim, Video Editor"` (home) / `"Aidan Halim, Video Editor — Experience"` / `"— Work"`. `astro.config.mjs` sets `site: 'https://aidanhalim.github.io'` with no `base` (repo is `AidanHalim.github.io`, deploys at the domain root).
@@ -50,7 +50,6 @@ The click-handling `<script>` inside `YouTubeEmbed.astro` is plain, has no per-i
 ## Known placeholders to replace
 
 - The showreel video in `src/pages/index.astro`.
-- Both role entries in `src/pages/experience.astro` (titles, org name, dates, bullet specifics — all marked with literal `TODO:` text).
 - `public/og-image.svg` — a simple placeholder graphic. Works for Open Graph previews now, but some older crawlers (notably Facebook/LinkedIn) handle SVG `og:image` less reliably than PNG/JPG — consider swapping in a real screenshot or designed graphic later.
 
-`src/data/work.ts` is no longer placeholder — it holds real portfolio content.
+`src/data/work.ts` and `src/pages/experience.astro` are no longer placeholder — they hold real content.
