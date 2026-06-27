@@ -1,0 +1,120 @@
+---
+export interface Props {
+  videoId: string;
+  title: string;
+}
+
+const { videoId, title } = Astro.props;
+const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+---
+
+<div class="yt-embed" data-video-id={videoId}>
+  <button type="button" class="yt-embed__trigger" aria-label={`Play video: ${title}`}>
+    <img
+      class="yt-embed__thumb"
+      src={thumbnailUrl}
+      alt={title}
+      loading="lazy"
+      width="480"
+      height="360"
+    />
+    <span class="yt-embed__play" aria-hidden="true">
+      <svg viewBox="0 0 68 48" width="68" height="48">
+        <path
+          d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C56.44.5 34 .5 34 .5s-22.44 0-27.1 1.05C3.97 2.33 2.26 4.81 1.48 7.74.5 12.4.5 24 .5 24s0 11.6.98 16.26c.78 2.93 2.49 5.31 5.42 6.09C11.56 47.5 34 47.5 34 47.5s22.44 0 27.1-1.15c2.93-.78 4.64-3.16 5.42-6.09.98-4.66.98-16.26.98-16.26s0-11.6-.98-16.26z"
+          fill="rgba(0,0,0,0.65)"></path>
+        <path d="M27 34l17-10-17-10v20z" fill="#fff"></path>
+      </svg>
+    </span>
+  </button>
+</div>
+
+<script>
+  // Identical inline scripts across every <YouTubeEmbed> instance get
+  // deduped and hoisted by Astro to run exactly once per page, regardless
+  // of how many videos are embedded. So this never closes over a single
+  // videoId — it wires up every .yt-embed found in the DOM generically.
+  // Do not add `is:inline` here: that would disable Astro's dedup and run
+  // a separate copy of this script per instance instead of once total.
+  function initYouTubeEmbeds() {
+    document.querySelectorAll<HTMLElement>('.yt-embed').forEach((container) => {
+      if (container.dataset.wired === 'true') return;
+      container.dataset.wired = 'true';
+
+      const trigger = container.querySelector<HTMLButtonElement>('.yt-embed__trigger');
+      const videoId = container.dataset.videoId;
+      if (!trigger || !videoId) return;
+
+      trigger.addEventListener(
+        'click',
+        () => {
+          const iframe = document.createElement('iframe');
+          iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+          iframe.title = trigger.getAttribute('aria-label') ?? 'YouTube video player';
+          iframe.allow =
+            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          iframe.allowFullscreen = true;
+          iframe.loading = 'eager';
+          iframe.className = 'yt-embed__iframe';
+
+          container.replaceChildren(iframe);
+        },
+        { once: true },
+      );
+    });
+  }
+
+  initYouTubeEmbeds();
+  document.addEventListener('astro:page-load', initYouTubeEmbeds);
+</script>
+
+<style>
+  .yt-embed {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .yt-embed__trigger {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .yt-embed__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .yt-embed__play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+  }
+
+  .yt-embed__trigger:hover .yt-embed__play,
+  .yt-embed__trigger:focus-visible .yt-embed__play {
+    transform: scale(1.08);
+  }
+
+  .yt-embed__iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const roles = [
+  {
+    title: 'Freelance Video Editor',
+    place: 'Self-Employed',
+    dates: 'Jan 2023 – Present',
+    bullets: [
+      'Edited commentary and montage videos for clients across YouTube and TikTok, averaging TODO: X videos/month.',
+      'Handled color grading, sound design, and pacing to match each creator’s voice and platform format.',
+      'Built a repeatable workflow in TODO: name your editing tools (e.g. Premiere Pro / DaVinci Resolve) that cut turnaround time by TODO: Y%.',
+    ],
+  },
+  {
+    title: 'TODO: Student Media Role Title',
+    place: 'TODO: organization name',
+    dates: 'Sep 2022 – May 2023',
+    bullets: [
+      'Produced recap and highlight videos for organization events, handling everything from footage capture to final export.',
+      'Collaborated with a small team on motion-graphics and infographic-style explainer videos.',
+      'Presented edited work to the organization’s leadership for feedback and iteration.',
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Aidan Halim, Video Editor — Experience"
+  description="Past roles and responsibilities in Aidan Halim's video editing experience."
+>
+  <h1>Experience</h1>
+
+  {roles.map((role) => (
+    <section class="role">
+      <h2>{role.title}</h2>
+      <p class="role__meta">{role.place} &middot; {role.dates}</p>
+      <ul>
+        {role.bullets.map((bullet) => <li>{bullet}</li>)}
+      </ul>
+    </section>
+  ))}
+</BaseLayout>

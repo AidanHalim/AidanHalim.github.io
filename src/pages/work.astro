@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import VideoCard from '../components/VideoCard.astro';
+import { tiers } from '../data/work.ts';
+---
+
+<BaseLayout
+  title="Aidan Halim, Video Editor — Work"
+  description="Aidan Halim's editing portfolio: cinematics, performance films, event promos, narrative film, video essays, and trailers."
+>
+  <h1>Work</h1>
+  <p class="intro">A selection of edits, organized by category.</p>
+
+  {tiers.map((tier) => (
+    <section class="tier" id={tier.slug}>
+      <h2 class="tier__heading">{tier.name}</h2>
+      {tier.categories.map((category) => (
+        <section class="category" id={category.slug}>
+          <h3>{category.name}</h3>
+          <div class="video-grid">
+            {category.videos.map((video) => (
+              <VideoCard videoId={video.id} title={video.title} caption={video.caption} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </section>
+  ))}
+</BaseLayout>

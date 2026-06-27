@@ -1,0 +1,36 @@
+---
+import YouTubeEmbed from './YouTubeEmbed.astro';
+
+export interface Props {
+  videoId: string;
+  title: string;
+  caption: string;
+}
+
+const { videoId, title, caption } = Astro.props;
+---
+
+<figure class="video-card">
+  <YouTubeEmbed videoId={videoId} title={title} />
+  <figcaption>
+    <h4 class="video-card__title">{title}</h4>
+    <p class="video-card__caption">{caption}</p>
+  </figcaption>
+</figure>
+
+<style>
+  .video-card {
+    margin: 0;
+  }
+
+  .video-card__title {
+    margin: var(--space-3) 0 var(--space-1);
+    font-size: 1rem;
+  }
+
+  .video-card__caption {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+</style>
