@@ -10,7 +10,7 @@ export interface Props {
 const { videoId, title, caption } = Astro.props;
 ---
 
-<figure class="video-card">
+<figure class="video-card" data-video-id={videoId} data-title={title} data-caption={caption}>
   <YouTubeEmbed videoId={videoId} title={title} />
   <figcaption>
     <h4 class="video-card__title">{title}</h4>

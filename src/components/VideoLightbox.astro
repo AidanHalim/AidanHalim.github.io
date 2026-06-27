@@ -1,0 +1,252 @@
+---
+---
+
+<div class="lightbox" role="dialog" aria-modal="true" aria-label="Video player" hidden>
+  <button type="button" class="lightbox__close" aria-label="Close video">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path
+        d="M5 5 L19 19 M19 5 L5 19"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        fill="none"></path>
+    </svg>
+  </button>
+
+  <button type="button" class="lightbox__nav lightbox__nav--prev" aria-label="Previous video">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path
+        d="M15 4 L7 12 L15 20"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"></path>
+    </svg>
+  </button>
+
+  <button type="button" class="lightbox__nav lightbox__nav--next" aria-label="Next video">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path
+        d="M9 4 L17 12 L9 20"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        fill="none"></path>
+    </svg>
+  </button>
+
+  <div class="lightbox__content">
+    <div class="lightbox__player"></div>
+    <div class="lightbox__caption">
+      <h3 class="lightbox__title"></h3>
+      <p class="lightbox__description"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Rendered once (from BaseLayout), so this script runs once per page by
+  // construction — no Astro script-dedup trick needed here, unlike
+  // YouTubeEmbed previously. It delegates clicks from `document` so it
+  // catches every `.yt-embed__trigger` regardless of how many VideoCards
+  // exist or where they're nested.
+  function initVideoLightbox() {
+    const lightbox = document.querySelector<HTMLElement>('.lightbox');
+    if (!lightbox || lightbox.dataset.wired === 'true') return;
+    lightbox.dataset.wired = 'true';
+
+    const player = lightbox.querySelector<HTMLElement>('.lightbox__player');
+    const titleEl = lightbox.querySelector<HTMLElement>('.lightbox__title');
+    const descEl = lightbox.querySelector<HTMLElement>('.lightbox__description');
+    const closeBtn = lightbox.querySelector<HTMLButtonElement>('.lightbox__close');
+    const prevBtn = lightbox.querySelector<HTMLButtonElement>('.lightbox__nav--prev');
+    const nextBtn = lightbox.querySelector<HTMLButtonElement>('.lightbox__nav--next');
+    if (!player || !titleEl || !descEl || !closeBtn || !prevBtn || !nextBtn) return;
+
+    let cards: HTMLElement[] = [];
+    let currentIndex = -1;
+    let lastTrigger: HTMLElement | null = null;
+
+    function render() {
+      const card = cards[currentIndex];
+      if (!card) return;
+
+      const videoId = card.dataset.videoId;
+      const title = card.dataset.title ?? '';
+      const caption = card.dataset.caption ?? '';
+
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+      iframe.title = title || 'YouTube video player';
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      // Astro's scoped-style attribute is only stamped onto markup that
+      // exists at build time, so a scoped CSS rule like
+      // `.lightbox__player iframe { ... }` would never match an iframe
+      // created here at runtime. Set sizing inline instead.
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = '0';
+      iframe.style.display = 'block';
+      player!.replaceChildren(iframe);
+
+      titleEl!.textContent = title;
+      descEl!.textContent = caption;
+      descEl!.hidden = caption.length === 0;
+
+      prevBtn!.disabled = currentIndex === 0;
+      nextBtn!.disabled = currentIndex === cards.length - 1;
+    }
+
+    function open(index: number, trigger: HTMLElement) {
+      currentIndex = index;
+      lastTrigger = trigger;
+      render();
+      lightbox!.hidden = false;
+      document.body.style.overflow = 'hidden';
+      closeBtn!.focus();
+    }
+
+    function close() {
+      lightbox!.hidden = true;
+      player!.replaceChildren();
+      document.body.style.overflow = '';
+      lastTrigger?.focus();
+    }
+
+    function step(delta: number) {
+      const next = currentIndex + delta;
+      if (next < 0 || next >= cards.length) return;
+      currentIndex = next;
+      render();
+    }
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+
+      const trigger = target.closest<HTMLElement>('.yt-embed__trigger');
+      if (trigger) {
+        const list = Array.from(document.querySelectorAll<HTMLElement>('.video-card'));
+        const card = trigger.closest<HTMLElement>('.video-card');
+        const index = card ? list.indexOf(card) : -1;
+        if (index !== -1) {
+          cards = list;
+          open(index, trigger);
+        }
+        return;
+      }
+
+      if (target === lightbox) close();
+    });
+
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', () => step(-1));
+    nextBtn.addEventListener('click', () => step(1));
+
+    document.addEventListener('keydown', (event) => {
+      if (lightbox!.hidden) return;
+      if (event.key === 'Escape') close();
+      if (event.key === 'ArrowLeft') step(-1);
+      if (event.key === 'ArrowRight') step(1);
+    });
+  }
+
+  initVideoLightbox();
+  document.addEventListener('astro:page-load', initVideoLightbox);
+</script>
+
+<style>
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(11, 12, 14, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: var(--space-8) var(--space-6);
+  }
+
+  .lightbox[hidden] {
+    display: none;
+  }
+
+  .lightbox__content {
+    width: min(100%, 960px);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .lightbox__player {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .lightbox__title {
+    margin: 0 0 var(--space-1);
+    font-size: 1.1rem;
+    color: var(--color-text);
+  }
+
+  .lightbox__description {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    max-width: 40rem;
+  }
+
+  .lightbox__close,
+  .lightbox__nav {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .lightbox__close:hover,
+  .lightbox__nav:hover:not(:disabled) {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .lightbox__nav:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .lightbox__close {
+    top: var(--space-6);
+    right: var(--space-6);
+  }
+
+  .lightbox__nav--prev {
+    left: var(--space-6);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox__nav--next {
+    right: var(--space-6);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+</style>

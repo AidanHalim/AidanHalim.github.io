@@ -8,7 +8,7 @@ Dark, minimal, clean — no UI framework, no web fonts, no visual clutter. Speci
 
 - **Palette** (`src/styles/global.css` `:root`): background `#0b0c0e`, surface `#15171a`, border `#26282c`, text `#e8e9eb`, muted text `#9a9ca1`, single accent `#5ee0c4` (soft teal). Only one accent color is used anywhere on the site — resist adding a second.
 - **Typography**: system font stack only (`-apple-system, Segoe UI, Roboto, ...`). Deliberate choice to avoid a web-font network request; the content (video thumbnails) carries the visual weight, not the chrome.
-- **Styling approach**: shared tokens live once in `src/styles/global.css` as CSS custom properties; each component (`Nav.astro`, `Footer.astro`, `YouTubeEmbed.astro`, `VideoCard.astro`) has its own scoped `<style>` block for layout specifics. Don't introduce Tailwind or a CSS-in-JS library — this split is intentional and sufficient for a site this size.
+- **Styling approach**: shared tokens live once in `src/styles/global.css` as CSS custom properties; each component (`Nav.astro`, `Footer.astro`, `YouTubeEmbed.astro`, `VideoCard.astro`, `VideoLightbox.astro`) has its own scoped `<style>` block for layout specifics. Don't introduce Tailwind or a CSS-in-JS library — this split is intentional and sufficient for a site this size.
 
 ## Page structure
 
@@ -33,13 +33,15 @@ Current structure: two tiers, three categories each.
 
 All videos in `work.ts` are real (CISSA event work, performance edits, narrative shorts, video essays, fan trailers) — this file is no longer placeholder content.
 
-## YouTube embeds (click-to-load)
+## YouTube embeds (click-to-load lightbox)
 
-`src/components/YouTubeEmbed.astro` renders a thumbnail (`img.youtube.com/vi/{id}/hqdefault.jpg`) behind a play button and only creates the real `<iframe>` (`youtube-nocookie.com`) on click, so pages never pay for the YouTube player on load. It has no built-in caption — it's a pure media component.
+`src/components/YouTubeEmbed.astro` is pure presentation: a thumbnail (`img.youtube.com/vi/{id}/hqdefault.jpg`) behind a play button, no iframe and no script of its own.
 
-`src/components/VideoCard.astro` wraps `YouTubeEmbed` and renders the video's `title` (as a heading) and `caption` (as a paragraph) beneath it. This is the component pages should use whenever a video needs visible context — used for every video on `/work` and for the homepage showreel, so there's no separate "hero video" component.
+`src/components/VideoCard.astro` wraps it and stamps the surrounding `<figure class="video-card">` with `data-video-id` / `data-title` / `data-caption` — that's the data the lightbox reads. It also renders `title` and `caption` as visible heading/paragraph beneath the thumbnail. This is the component pages should use whenever a video needs visible context — used for every video on `/work` and for the homepage showreel, so there's no separate "hero video" component.
 
-The click-handling `<script>` inside `YouTubeEmbed.astro` is plain, has no per-instance values baked in, and is byte-identical across every instance. Astro deduplicates identical inline scripts across multiple uses of the same component on one page, so this one script runs exactly once per page regardless of how many videos are embedded (verified: the built `/work` page has 12 `.yt-embed` instances across six categories but only one `<script type="module">` tag). **Do not add `is:inline` or `define:vars`** to this script — either would break the dedup and either duplicate the script per instance or stop it from running generically.
+`src/components/VideoLightbox.astro` is rendered exactly once, from `BaseLayout.astro`, so every page gets one overlay regardless of how many videos it has. Its script listens for clicks on `.yt-embed__trigger` via delegation on `document` (catches every `VideoCard` on the page, however many there are), builds the navigable video list from every `.video-card` on the page in DOM order, and opens the clicked video full-size over a blurred backdrop with title/caption, a close button, and Prev/Next arrows (also wired to ←/→ and Escape). The iframe is only created when the lightbox opens and is fully torn down (`replaceChildren()`) on close or when navigating, so playback always stops and nothing loads until a thumbnail is actually clicked.
+
+Because there's only ever one `VideoLightbox` instance per page, none of this depends on Astro's inline-script dedup behavior (unlike the old in-place iframe-swap this replaced) — it's a single component with a single script, guarded by the same `dataset.wired` idempotency pattern used elsewhere on the site.
 
 ## Deployment
 
